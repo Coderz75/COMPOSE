@@ -5,6 +5,7 @@
 	import toast from "svelte-french-toast";
 	import { handleError } from "$lib/handleError";
 	import {
+	exportTestAsJSON,
 		getTestInfo,
 		getTestProblems,
 		getThisUser,
@@ -219,6 +220,21 @@
 			toast.error(error.message);
 		}
 	}
+	async function downloadTestAsJSON(){
+		let testJSON = await exportTestAsJSON(testId);
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(testJSON)));
+		element.setAttribute('download', `COMPOSE-export-test-${testId}.json`);
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
+		console.log();
+		
+	}
 
 	getTest();
 </script>
@@ -253,7 +269,7 @@
 			
 			<Button kind="tertiary" type="submit" size="small"  on:click={downloadTestAsCsv}>Download Test As CSV</Button>
 			
-			<Button kind="tertiary" type="submit" size="small" href={`/tests/${testId}/serve`}>Download Test As JSON</Button>
+			<Button kind="tertiary" type="submit" size="small" on:click={downloadTestAsJSON}>Download Test As JSON</Button>
 		{/if}
 		{#if loadingProblems}
 			<p>Loading problems...</p>
